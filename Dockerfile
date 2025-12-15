@@ -69,7 +69,7 @@ RUN update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.11 1
 RUN python3 -m pip install --upgrade --ignore-installed pip setuptools wheel
 
 # Install PyTorch nightly with CUDA 12.8 support (RTX 5090 sm_120)
-RUN pip install --pre torch torchvision torchaudio \
+RUN pip install --no-cache-dir --pre torch torchvision torchaudio \
     --index-url https://download.pytorch.org/whl/nightly/cu128
 
 # Install code-server (VSCode web)
@@ -86,17 +86,17 @@ RUN git clone https://github.com/comfyanonymous/ComfyUI.git comfyui && \
     git reset --hard ${COMFYUI_COMMIT}
 
 # Install ComfyUI dependencies
-RUN cd comfyui && pip install -r requirements.txt
+RUN cd comfyui && pip install --no-cache-dir -r requirements.txt
 
 # Install custom nodes dependencies
 RUN cd comfyui/custom_nodes && \
     # ComfyUI Manager
     git clone https://github.com/ltdrdata/ComfyUI-Manager.git && \
     # Install WAN 2.2 dependencies if needed
-    pip install accelerate diffusers timm einops
+    pip install --no-cache-dir accelerate diffusers timm einops
 
 # Install additional useful packages
-RUN pip install \
+RUN pip install --no-cache-dir \
     jupyter \
     ipython \
     matplotlib \
