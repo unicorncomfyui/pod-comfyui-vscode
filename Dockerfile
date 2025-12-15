@@ -69,8 +69,10 @@ RUN update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.11 1
 RUN python3 -m pip install --upgrade --ignore-installed pip setuptools wheel
 
 # Install PyTorch nightly with CUDA 12.8 support (RTX 5090 sm_120)
-RUN pip install --no-cache-dir --pre torch torchvision torchaudio \
-    --index-url https://download.pytorch.org/whl/nightly/cu128
+RUN --mount=type=cache,target=/root/.cache/pip \
+    pip install --pre torch torchvision torchaudio \
+    --index-url https://download.pytorch.org/whl/nightly/cu128 \
+    && rm -rf /tmp/* /var/tmp/*
 
 # Install code-server (VSCode web)
 ARG CODE_SERVER_VERSION=4.96.2
@@ -86,17 +88,20 @@ RUN git clone https://github.com/comfyanonymous/ComfyUI.git comfyui && \
     git reset --hard ${COMFYUI_COMMIT}
 
 # Install ComfyUI dependencies
-RUN cd comfyui && pip install --no-cache-dir -r requirements.txt
+RUN --mount=type=cache,target=/root/.cache/pip \
+    cd comfyui && pip install -r requirements.txt \
+    && rm -rf /tmp/* /var/tmp/*
 
 # Install custom nodes dependencies
-RUN cd comfyui/custom_nodes && \
-    # ComfyUI Manager
+RUN --mount=type=cache,target=/root/.cache/pip \
+    cd comfyui/custom_nodes && \
     git clone https://github.com/ltdrdata/ComfyUI-Manager.git && \
-    # Install WAN 2.2 dependencies if needed
-    pip install --no-cache-dir accelerate diffusers timm einops
+    pip install accelerate diffusers timm einops \
+    && rm -rf /tmp/* /var/tmp/*
 
 # Install additional useful packages
-RUN pip install --no-cache-dir \
+RUN --mount=type=cache,target=/root/.cache/pip \
+    pip install \
     jupyter \
     ipython \
     matplotlib \
@@ -105,7 +110,8 @@ RUN pip install --no-cache-dir \
     pillow \
     scikit-image \
     scipy \
-    tqdm
+    tqdm \
+    && rm -rf /tmp/* /var/tmp/*
 
 # Copy initialization and startup scripts
 COPY init.sh /app/init.sh
