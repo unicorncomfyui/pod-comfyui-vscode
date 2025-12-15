@@ -66,7 +66,7 @@ RUN update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.11 1
     update-alternatives --install /usr/bin/python python /usr/bin/python3.11 1
 
 # Upgrade pip
-RUN python3 -m pip install --upgrade pip setuptools wheel
+RUN python3 -m pip install --upgrade --ignore-installed pip setuptools wheel
 
 # Install PyTorch nightly with CUDA 12.8 support (RTX 5090 sm_120)
 RUN pip install --pre torch torchvision torchaudio \
