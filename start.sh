@@ -54,13 +54,14 @@ fi
 
 # Start code-server in background
 echo "🖥️  Starting code-server (VSCode) on port ${VSCODE_PORT}..."
+echo "   Opening directory: $COMFYUI_DIR"
 
 code-server \
     --bind-addr 0.0.0.0:${VSCODE_PORT} \
     --auth none \
     --disable-telemetry \
     --disable-update-check \
-    /workspace > /var/log/code-server.log 2>&1 &
+    "$COMFYUI_DIR" > /var/log/code-server.log 2>&1 &
 
 CODE_SERVER_PID=$!
 echo "✅ code-server started (PID: $CODE_SERVER_PID)"
@@ -106,7 +107,7 @@ while true; do
             --auth none \
             --disable-telemetry \
             --disable-update-check \
-            /workspace > /var/log/code-server.log 2>&1 &
+            "$COMFYUI_DIR" > /var/log/code-server.log 2>&1 &
         CODE_SERVER_PID=$!
     fi
 

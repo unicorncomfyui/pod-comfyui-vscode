@@ -121,6 +121,10 @@ RUN chmod +x /app/init.sh /app/start.sh
 # Copy code-server configuration
 COPY config/code-server-config.yaml /root/.config/code-server/config.yaml
 
+# Copy VSCode settings (dark theme, etc.)
+RUN mkdir -p /root/.local/share/code-server/User
+COPY config/vscode-settings.json /root/.local/share/code-server/User/settings.json
+
 # Expose ports
 # 8080: code-server (VSCode)
 # 3000: ComfyUI
