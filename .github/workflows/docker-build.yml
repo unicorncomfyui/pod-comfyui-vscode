@@ -58,11 +58,24 @@ jobs:
         with:
           images: vlop12ui/pod-comfyui-vscode
           tags: |
+            # Branch name (main, develop)
             type=ref,event=branch
+
+            # Latest tag only on main branch
             type=raw,value=latest,enable={{is_default_branch}}
-            type=sha,prefix={{branch}}-
+
+            # Short SHA with branch prefix (main-abc1234, develop-abc1234)
+            type=sha,prefix={{branch}}-,format=short
+
+            # Date + short SHA for chronological sorting (20251216-abc1234)
+            type=raw,value={{date 'YYYYMMDD'}}-{{sha}},enable=true
+
+            # Semver tags if you push git tags (v1.0.0, v1.0, v1)
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
 
       - name: Build and push
+        id: build
         uses: docker/build-push-action@v5
         with:
           context: .
@@ -72,3 +85,14 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=registry,ref=vlop12ui/pod-comfyui-vscode:buildcache
           cache-to: type=registry,ref=vlop12ui/pod-comfyui-vscode:buildcache,mode=max
+
+      - name: Image summary
+        run: |
+          echo "## Docker Image Published 🐳" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Tags created:**" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          echo "${{ steps.meta.outputs.tags }}" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Image digest:** \`${{ steps.build.outputs.digest }}\`" >> $GITHUB_STEP_SUMMARY
