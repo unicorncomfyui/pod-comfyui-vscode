@@ -17,7 +17,8 @@ ENV DEBIAN_FRONTEND=noninteractive \
     LD_LIBRARY_PATH="/usr/lib/x86_64-linux-gnu:${CUDA_HOME}/lib64:${LD_LIBRARY_PATH}" \
     TORCH_CUDA_ARCH_LIST="8.9+PTX" \
     COMFYUI_PORT=3000 \
-    VSCODE_PORT=8080
+    VSCODE_PORT=8080 \
+    CHECK_MODELS=true
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
