@@ -109,11 +109,13 @@ fi
 if [ "${CHECK_MODELS:-true}" = "true" ]; then
     echo "🔍 Checking Z-Image-Turbo models..."
 
-    # Determine ComfyUI location (same logic as start.sh)
-    if [ -d "/app/comfyui" ]; then
-        COMFYUI_DIR="/app/comfyui"
-    elif [ -d "/workspace/ComfyUI" ]; then
+    # Determine ComfyUI location - PRIORITIZE network volume over container
+    if [ -d "/workspace/ComfyUI" ]; then
         COMFYUI_DIR="/workspace/ComfyUI"
+        echo "📦 Using network volume ComfyUI at $COMFYUI_DIR"
+    elif [ -d "/app/comfyui" ]; then
+        COMFYUI_DIR="/app/comfyui"
+        echo "📦 Using container ComfyUI at $COMFYUI_DIR"
     else
         echo "⚠️  ComfyUI directory not found, skipping model check"
     fi
@@ -128,9 +130,9 @@ if [ "${CHECK_MODELS:-true}" = "true" ]; then
 
         # Check diffusion model
         if [ ! -f "$DIFFUSION_MODEL" ]; then
-            echo "📥 Downloading Z-Image-Turbo diffusion model..."
+            echo "📥 Downloading Z-Image-Turbo diffusion model (~3GB)..."
             mkdir -p "$COMFYUI_DIR/models/checkpoints"
-            wget -q --show-progress -O "$DIFFUSION_MODEL" \
+            wget --progress=dot:giga -O "$DIFFUSION_MODEL" \
                 "https://huggingface.co/Comfy-Org/z_image_turbo/resolve/main/split_files/diffusion_models/z_image_turbo_bf16.safetensors" \
                 || { echo "❌ Failed to download diffusion model"; MODELS_MISSING=true; }
         else
@@ -139,9 +141,9 @@ if [ "${CHECK_MODELS:-true}" = "true" ]; then
 
         # Check text encoder
         if [ ! -f "$TEXT_ENCODER" ]; then
-            echo "📥 Downloading Z-Image-Turbo text encoder..."
+            echo "📥 Downloading Z-Image-Turbo text encoder (~7GB)..."
             mkdir -p "$COMFYUI_DIR/models/clip"
-            wget -q --show-progress -O "$TEXT_ENCODER" \
+            wget --progress=dot:giga -O "$TEXT_ENCODER" \
                 "https://huggingface.co/Comfy-Org/z_image_turbo/resolve/main/split_files/text_encoders/qwen_3_4b.safetensors" \
                 || { echo "❌ Failed to download text encoder"; MODELS_MISSING=true; }
         else
@@ -150,9 +152,9 @@ if [ "${CHECK_MODELS:-true}" = "true" ]; then
 
         # Check VAE
         if [ ! -f "$VAE_MODEL" ]; then
-            echo "📥 Downloading Z-Image-Turbo VAE..."
+            echo "📥 Downloading Z-Image-Turbo VAE (~200MB)..."
             mkdir -p "$COMFYUI_DIR/models/vae"
-            wget -q --show-progress -O "$VAE_MODEL" \
+            wget --progress=dot:giga -O "$VAE_MODEL" \
                 "https://huggingface.co/Comfy-Org/z_image_turbo/resolve/main/split_files/vae/ae.safetensors" \
                 || { echo "❌ Failed to download VAE"; MODELS_MISSING=true; }
         else
