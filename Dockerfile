@@ -137,19 +137,20 @@ RUN cd comfyui/custom_nodes && \
 
 # Install requirements for ALL custom nodes in one layer (faster build)
 RUN --mount=type=cache,target=/root/.cache/pip \
-    for dir in comfyui/custom_nodes/*; do \
+    cd /app && \
+    for dir in /app/comfyui/custom_nodes/*; do \
         if [ -f "$dir/requirements.txt" ]; then \
             echo "Installing requirements for $(basename $dir)..."; \
             pip install -r "$dir/requirements.txt" || true; \
         fi; \
         if [ -f "$dir/install.py" ]; then \
             echo "Running install.py for $(basename $dir)..."; \
-            cd "$dir" && python install.py || true; \
+            cd "$dir" && python install.py && cd /app || true; \
         fi; \
     done \
     && rm -rf /tmp/* /var/tmp/* \
-    && find comfyui/custom_nodes -name "*.pth" -size +100M -delete \
-    && find comfyui/custom_nodes -name "*.safetensors" -size +100M -delete
+    && find /app/comfyui/custom_nodes -name "*.pth" -size +100M -delete \
+    && find /app/comfyui/custom_nodes -name "*.safetensors" -size +100M -delete
 
 # Install additional useful packages
 RUN --mount=type=cache,target=/root/.cache/pip \
