@@ -6,8 +6,11 @@ set -e
 
 echo "🚀 Starting RunPod ComfyUI Pod with VSCode..."
 
-# Network Volume detection and symlink
-if [ -d "/runpod-volume" ] && [ ! -L "/workspace" ]; then
+# Network Volume detection
+# RunPod mounts network volumes at /workspace automatically
+if [ -d "/workspace" ] && [ "$(ls -A /workspace 2>/dev/null)" ]; then
+    echo "📦 Network Volume detected at /workspace"
+elif [ -d "/runpod-volume" ] && [ ! -L "/workspace" ]; then
     echo "📦 Network Volume detected at /runpod-volume"
     ln -sf /runpod-volume /workspace
     echo "✅ Symlink created: /workspace -> /runpod-volume"
@@ -16,13 +19,13 @@ else
     mkdir -p /workspace
 fi
 
-# Determine ComfyUI location (prefer container version for stability)
-if [ -d "/app/comfyui" ]; then
-    COMFYUI_DIR="/app/comfyui"
-    echo "📂 Using container ComfyUI: $COMFYUI_DIR"
-elif [ -d "/workspace/ComfyUI" ]; then
+# Determine ComfyUI location - PRIORITIZE network volume over container
+if [ -d "/workspace/ComfyUI" ]; then
     COMFYUI_DIR="/workspace/ComfyUI"
     echo "📂 Using network volume ComfyUI: $COMFYUI_DIR"
+elif [ -d "/app/comfyui" ]; then
+    COMFYUI_DIR="/app/comfyui"
+    echo "📂 Using container ComfyUI: $COMFYUI_DIR"
 else
     echo "❌ ERROR: ComfyUI not found!"
     exit 1
