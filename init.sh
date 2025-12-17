@@ -109,15 +109,15 @@ fi
 if [ "${CHECK_MODELS:-true}" = "true" ]; then
     echo "🔍 Checking Z-Image-Turbo models..."
 
-    # Determine ComfyUI location - PRIORITIZE network volume over container
+    # ONLY download models if network volume is available
+    # Container storage doesn't have enough space (~10GB needed)
     if [ -d "/workspace/ComfyUI" ]; then
         COMFYUI_DIR="/workspace/ComfyUI"
-        echo "📦 Using network volume ComfyUI at $COMFYUI_DIR"
-    elif [ -d "/app/comfyui" ]; then
-        COMFYUI_DIR="/app/comfyui"
-        echo "📦 Using container ComfyUI at $COMFYUI_DIR"
+        echo "📦 Network volume detected - using $COMFYUI_DIR for models"
     else
-        echo "⚠️  ComfyUI directory not found, skipping model check"
+        echo "⏭️  No network volume detected - skipping model downloads (container has insufficient storage)"
+        echo "   Models will need to be provided manually or use network volume"
+        COMFYUI_DIR=""
     fi
 
     if [ -n "$COMFYUI_DIR" ]; then
