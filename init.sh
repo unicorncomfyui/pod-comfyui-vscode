@@ -122,7 +122,7 @@ if [ "${CHECK_MODELS:-true}" = "true" ]; then
 
     if [ -n "$COMFYUI_DIR" ]; then
         # Define model paths
-        DIFFUSION_MODEL="$COMFYUI_DIR/models/checkpoints/z_image_turbo_bf16.safetensors"
+        DIFFUSION_MODEL="$COMFYUI_DIR/models/diffusion_models/z_image_turbo_bf16.safetensors"
         TEXT_ENCODER="$COMFYUI_DIR/models/clip/qwen_3_4b.safetensors"
         VAE_MODEL="$COMFYUI_DIR/models/vae/ae.safetensors"
 
@@ -131,7 +131,7 @@ if [ "${CHECK_MODELS:-true}" = "true" ]; then
         # Check diffusion model
         if [ ! -f "$DIFFUSION_MODEL" ]; then
             echo "📥 Downloading Z-Image-Turbo diffusion model (~3GB)..."
-            mkdir -p "$COMFYUI_DIR/models/checkpoints"
+            mkdir -p "$COMFYUI_DIR/models/diffusion_models"
             wget --progress=dot:giga -O "$DIFFUSION_MODEL" \
                 "https://huggingface.co/Comfy-Org/z_image_turbo/resolve/main/split_files/diffusion_models/z_image_turbo_bf16.safetensors" \
                 || { echo "❌ Failed to download diffusion model"; MODELS_MISSING=true; }
