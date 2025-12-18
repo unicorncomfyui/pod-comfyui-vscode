@@ -159,11 +159,12 @@ RUN --mount=type=cache,target=/root/.cache/pip \
     ipython \
     matplotlib \
     pandas \
-    opencv-python \
+    opencv-contrib-python \
     pillow \
     scikit-image \
     scipy \
     tqdm \
+    pyOpenSSL \
     && rm -rf /tmp/* /var/tmp/*
 
 # Copy initialization and startup scripts
