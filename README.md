@@ -8,12 +8,17 @@ Persistent RunPod Pod with **ComfyUI** + **VSCode (code-server)** for AI video/i
 
 ## Why This Pod?
 
-✅ **No dependency on public pods** - Your own persistent environment
-✅ **VSCode web interface** - Full IDE in your browser
-✅ **ComfyUI ready** - Optimized for WAN 2.2 workflows
-✅ **SageAttention cached** - 10s cold start vs 2-3min
-✅ **Performance optimized** - CUDA 12.8.1, tcmalloc, PyTorch nightly
-✅ **Network Volume support** - Persistent storage
+**Ready to go** - No dependency on public pods, your own persistent environment
+
+**VSCode web interface** - Full IDE in your browser with terminal access
+
+**Z-Image-Turbo ready** - 6B parameter photorealistic image generation (auto-download)
+
+**SageAttention cached** - 10s cold start vs 2-3min compilation
+
+**Performance optimized** - CUDA 12.8.1, tcmalloc, PyTorch nightly for RTX 5090
+
+**Network Volume support** - Persistent models, cache, and custom nodes
 
 ## Quick Start
 
