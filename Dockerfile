@@ -122,10 +122,11 @@ RUN cd comfyui/custom_nodes && \
     git clone --depth 1 https://github.com/Suzie1/ComfyUI_Comfyroll_CustomNodes.git && \
     git clone --depth 1 https://github.com/WASasquatch/was-node-suite-comfyui.git && \
     git clone --depth 1 https://github.com/yolain/ComfyUI-Easy-Use.git && \
-    git clone --depth 1 https://github.com/chflame163/ComfyUI_LayerStyle.git && \
-    git clone --depth 1 https://github.com/chflame163/ComfyUI_LayerStyle_Advance.git && \
     git clone --depth 1 https://github.com/shadowcz007/comfyui-mixlab-nodes.git && \
     rm -rf /tmp/* /var/tmp/*
+# Temporarily disabled LayerStyle nodes (require opencv-contrib with cv2.ximgproc)
+# git clone --depth 1 https://github.com/chflame163/ComfyUI_LayerStyle.git && \
+# git clone --depth 1 https://github.com/chflame163/ComfyUI_LayerStyle_Advance.git && \
 
 # Install ComfyUI custom nodes - Batch 4 (Impact Pack - downloads models)
 # Skip model downloads by setting environment variable
@@ -159,12 +160,11 @@ RUN --mount=type=cache,target=/root/.cache/pip \
     ipython \
     matplotlib \
     pandas \
-    opencv-contrib-python \
+    opencv-python \
     pillow \
     scikit-image \
     scipy \
     tqdm \
-    pyOpenSSL \
     && rm -rf /tmp/* /var/tmp/*
 
 # Copy initialization and startup scripts
