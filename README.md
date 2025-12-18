@@ -52,6 +52,8 @@ No authentication required - RunPod handles security.
 | **PyTorch** | Nightly cu128 | RTX 5090 support (sm_120) |
 | **ComfyUI** | Commit 36357bb | Stable version |
 | **SageAttention** | Commit 68de379 | INT8/FP16 quantized attention |
+| **Z-Image-Turbo** | Latest | Text-to-image generation (auto-download) |
+| **UltraSharp** | 4x upscaler | ESRGAN upscaler (67MB, included) |
 | **code-server** | 4.96.2 | VSCode in browser |
 | **tcmalloc** | Latest | Memory optimization |
 
@@ -61,8 +63,12 @@ No authentication required - RunPod handles security.
 
 - ⚡ **SageAttention caching**: ~10s cold start (vs 2-3min without cache)
 - 🎯 **WAN 2.2 ready**: Text-to-video and image-to-video workflows
+- 🖼️ **Z-Image-Turbo auto-download**: Automatic model download to network volume (diffusion model, text encoder, VAE)
+- 🔍 **UltraSharp 4x upscaler**: Pre-installed ESRGAN upscaler (67MB)
+- 📋 **Example workflows**: Z-Image-Turbo with upscaling demonstration
 - 🧠 **tcmalloc enabled**: Efficient memory management
 - 📦 **Network Volume support**: Persistent models and cache
+- 🔄 **Auto-initialization**: ComfyUI automatically copied to network volume on first run
 
 ### Development Environment
 
@@ -70,6 +76,7 @@ No authentication required - RunPod handles security.
 - 🔌 **No authentication**: Secured by RunPod proxy
 - 📂 **Access to /workspace**: Edit custom nodes, workflows, scripts
 - 🐍 **Python 3.11 + PyTorch**: Ready for development
+- 📊 **Professional logging**: Clean output with [OK]/[ERROR]/[WARN] tags and single-line progress bars
 
 ## Network Volume Structure
 
@@ -78,12 +85,16 @@ No authentication required - RunPod handles security.
 ├── ComfyUI/                    # ComfyUI installation
 │   ├── models/
 │   │   ├── checkpoints/        # Your models (.safetensors)
-│   │   ├── loras/
-│   │   ├── vae/
-│   │   └── unet/
-│   ├── custom_nodes/           # Custom nodes
+│   │   ├── diffusion_models/   # Z-Image-Turbo diffusion model (auto-downloaded)
+│   │   ├── clip/               # Text encoders (Qwen, auto-downloaded)
+│   │   ├── vae/                # VAE models (auto-downloaded)
+│   │   ├── unet/               # UNet models
+│   │   ├── loras/              # LoRA models
+│   │   └── upscale_models/     # UltraSharp 4x (pre-installed)
+│   ├── custom_nodes/           # 16 custom nodes installed
 │   ├── output/                 # Generated images/videos
-│   └── input/                  # Source images
+│   ├── input/                  # Source images
+│   └── user/default/workflows/ # Example Z-Image-Turbo workflow
 ├── sageattention_cache/        # SageAttention compiled cache
 │   ├── SageAttention/
 │   └── .commit_hash
@@ -189,6 +200,21 @@ Verify in RunPod dashboard:
 - Cost: ~$3.60-$7.20/day for active development
 
 **Tip**: Stop pod when not in use to save costs.
+
+## Git Workflow
+
+This repository uses Git Flow with two main branches:
+
+- **`main`**: Stable production-ready images. Pull from `vlop12ui/pod-comfyui-vscode:main` or `:latest` for stable deployments.
+- **`develop`**: Development branch with new features and updates. Pull from `vlop12ui/pod-comfyui-vscode:develop` for testing.
+
+Docker images are automatically built and tagged for both branches on every push via GitHub Actions.
+
+**Available Tags:**
+- `main` / `latest` - Latest stable release
+- `develop` - Latest development build
+- `main-{sha}` / `develop-{sha}` - Specific commit builds
+- `{date}-{sha}` - Date-tagged builds for chronological tracking
 
 ## License
 
