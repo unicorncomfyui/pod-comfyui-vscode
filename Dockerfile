@@ -167,6 +167,16 @@ RUN --mount=type=cache,target=/root/.cache/pip \
     tqdm \
     && rm -rf /tmp/* /var/tmp/*
 
+# Download UltraSharp upscaler model (67MB)
+RUN mkdir -p /app/comfyui/models/upscale_models && \
+    wget -q -O /app/comfyui/models/upscale_models/4x-UltraSharp.pth \
+    "https://huggingface.co/lokCX/4x-Ultrasharp/resolve/main/4x-UltraSharp.pth" && \
+    echo "✅ UltraSharp upscaler downloaded"
+
+# Copy example workflows
+RUN mkdir -p /app/comfyui/user/default/workflows
+COPY workflows/z_image_turbo_upscaler.json /app/comfyui/user/default/workflows/
+
 # Copy initialization and startup scripts
 COPY init.sh /app/init.sh
 COPY start.sh /app/start.sh
