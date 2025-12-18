@@ -4,7 +4,7 @@
 
 set -e
 
-echo "🚀 Starting initialization..."
+echo "Starting initialization..."
 
 # SageAttention installation with network volume caching
 SAGE_CACHE_DIR="/workspace/sageattention_cache"
@@ -15,9 +15,9 @@ compile_sageattention() {
     echo "🔨 Compiling SageAttention from source (commit $SAGE_COMMIT)..."
 
     # Pre-flight check: Verify PyTorch can access CUDA
-    echo "🔍 Pre-flight check: Testing PyTorch CUDA access..."
-    if ! python -c "import torch; assert torch.cuda.is_available(), 'CUDA not available'; print(f'✅ CUDA available: {torch.cuda.get_device_name(0)}')"; then
-        echo "❌ ERROR: PyTorch cannot access CUDA"
+    echo "Pre-flight check: Testing PyTorch CUDA access..."
+    if ! python -c "import torch; assert torch.cuda.is_available(), 'CUDA not available'; print(f'CUDA available: {torch.cuda.get_device_name(0)}')"; then
+        echo "[ERROR] PyTorch cannot access CUDA"
         echo "LD_LIBRARY_PATH: $LD_LIBRARY_PATH"
         echo "CUDA_HOME: $CUDA_HOME"
         return 1
@@ -38,36 +38,36 @@ compile_sageattention() {
     export NVCC_APPEND_FLAGS="--threads 8"
     export MAX_JOBS=32
 
-    echo "🔧 Building CUDA extensions..."
+    echo "Building CUDA extensions..."
     # Step 1: Build extensions in-place
     if ! python setup.py build_ext --inplace > /tmp/sage_build.log 2>&1; then
-        echo "❌ ERROR: SageAttention build_ext failed"
+        echo "[ERROR] SageAttention build_ext failed"
         cat /tmp/sage_build.log
         return 1
     fi
 
-    echo "📦 Installing SageAttention package..."
+    echo "Installing SageAttention package..."
     # Step 2: Install package (normal install, NOT editable)
     if ! pip install --no-build-isolation --no-deps . >> /tmp/sage_build.log 2>&1; then
-        echo "❌ ERROR: SageAttention install failed"
+        echo "[ERROR] SageAttention install failed"
         cat /tmp/sage_build.log
         return 1
     fi
 
     # Verify installation
-    echo "✅ Verifying SageAttention installation..."
-    if ! python -c "import sageattention; print(f'✅ SageAttention version: {sageattention.__version__ if hasattr(sageattention, \"__version__\") else \"installed\"}')" 2>/dev/null; then
-        echo "❌ ERROR: SageAttention import failed after installation"
+    echo "Verifying SageAttention installation..."
+    if ! python -c "import sageattention; print(f'SageAttention version: {sageattention.__version__ if hasattr(sageattention, \"__version__\") else \"installed\"}')" 2>/dev/null; then
+        echo "[ERROR] SageAttention import failed after installation"
         return 1
     fi
 
     # Cache the successful build
-    echo "💾 Caching SageAttention build to network volume..."
+    echo "Caching SageAttention build to network volume..."
     mkdir -p "$SAGE_CACHE_DIR"
     cp -r /tmp/SageAttention "$SAGE_CACHE_DIR/"
     echo "$SAGE_COMMIT" > "$SAGE_COMMIT_FILE"
 
-    echo "✅ SageAttention compilation and caching completed"
+    echo "[OK] SageAttention compilation and caching completed"
     return 0
 }
 
@@ -76,8 +76,8 @@ if [ -d "$SAGE_CACHE_DIR/SageAttention" ] && [ -f "$SAGE_COMMIT_FILE" ]; then
     CACHED_COMMIT=$(cat "$SAGE_COMMIT_FILE")
 
     if [ "$CACHED_COMMIT" = "$SAGE_COMMIT" ]; then
-        echo "📦 Found valid SageAttention cache (commit $CACHED_COMMIT)"
-        echo "⚡ Installing from cache (~10 seconds)..."
+        echo "Found valid SageAttention cache (commit $CACHED_COMMIT)"
+        echo "Installing from cache (~10 seconds)..."
 
         cd "$SAGE_CACHE_DIR/SageAttention"
 
@@ -85,38 +85,38 @@ if [ -d "$SAGE_CACHE_DIR/SageAttention" ] && [ -f "$SAGE_COMMIT_FILE" ]; then
         if pip install --no-build-isolation --no-deps . > /tmp/sage_cache_install.log 2>&1; then
             # Verify cached installation works
             if python -c "import sageattention" 2>/dev/null; then
-                echo "✅ SageAttention installed from cache successfully"
+                echo "[OK] SageAttention installed from cache successfully"
             else
-                echo "⚠️  Cached installation failed import test, rebuilding..."
+                echo "[WARN] Cached installation failed import test, rebuilding..."
                 compile_sageattention || exit 1
             fi
         else
-            echo "⚠️  Cache installation failed, rebuilding from source..."
+            echo "[WARN] Cache installation failed, rebuilding from source..."
             compile_sageattention || exit 1
         fi
     else
-        echo "⚠️  Cache commit mismatch (cached: $CACHED_COMMIT, expected: $SAGE_COMMIT)"
-        echo "🔄 Rebuilding SageAttention..."
+        echo "[WARN] Cache commit mismatch (cached: $CACHED_COMMIT, expected: $SAGE_COMMIT)"
+        echo "Rebuilding SageAttention..."
         compile_sageattention || exit 1
     fi
 else
-    echo "📭 No SageAttention cache found"
+    echo "No SageAttention cache found"
     echo "🔨 Compiling from source (this will take 2-3 minutes)..."
     compile_sageattention || exit 1
 fi
 
 # Z-Image-Turbo model checking and downloading
 if [ "${CHECK_MODELS:-true}" = "true" ]; then
-    echo "🔍 Checking Z-Image-Turbo models..."
+    echo "Checking Z-Image-Turbo models..."
 
     # ONLY download models if network volume is available
     # Container storage doesn't have enough space (~10GB needed)
     if [ -d "/workspace/ComfyUI" ]; then
         COMFYUI_DIR="/workspace/ComfyUI"
-        echo "📦 Network volume detected - using $COMFYUI_DIR for models"
+        echo "Network volume detected - using $COMFYUI_DIR for models"
     else
-        echo "⏭️  No network volume detected - skipping model downloads (container has insufficient storage)"
-        echo "   Models will need to be provided manually or use network volume"
+        echo "[SKIP] No network volume detected - skipping model downloads (container has insufficient storage)"
+        echo "       Models will need to be provided manually or use network volume"
         COMFYUI_DIR=""
     fi
 
@@ -130,46 +130,46 @@ if [ "${CHECK_MODELS:-true}" = "true" ]; then
 
         # Check diffusion model
         if [ ! -f "$DIFFUSION_MODEL" ]; then
-            echo "📥 Downloading Z-Image-Turbo diffusion model (~3GB)..."
+            echo "Downloading Z-Image-Turbo diffusion model (3GB)..."
             mkdir -p "$COMFYUI_DIR/models/diffusion_models"
-            wget --progress=dot:giga -O "$DIFFUSION_MODEL" \
+            wget --progress=bar:force:noscroll -O "$DIFFUSION_MODEL" \
                 "https://huggingface.co/Comfy-Org/z_image_turbo/resolve/main/split_files/diffusion_models/z_image_turbo_bf16.safetensors" \
-                || { echo "❌ Failed to download diffusion model"; MODELS_MISSING=true; }
+                || { echo "[ERROR] Failed to download diffusion model"; MODELS_MISSING=true; }
         else
-            echo "✅ Diffusion model found: z_image_turbo_bf16.safetensors"
+            echo "[OK] Diffusion model found: z_image_turbo_bf16.safetensors"
         fi
 
         # Check text encoder
         if [ ! -f "$TEXT_ENCODER" ]; then
-            echo "📥 Downloading Z-Image-Turbo text encoder (~7GB)..."
+            echo "Downloading Z-Image-Turbo text encoder (7GB)..."
             mkdir -p "$COMFYUI_DIR/models/clip"
-            wget --progress=dot:giga -O "$TEXT_ENCODER" \
+            wget --progress=bar:force:noscroll -O "$TEXT_ENCODER" \
                 "https://huggingface.co/Comfy-Org/z_image_turbo/resolve/main/split_files/text_encoders/qwen_3_4b.safetensors" \
-                || { echo "❌ Failed to download text encoder"; MODELS_MISSING=true; }
+                || { echo "[ERROR] Failed to download text encoder"; MODELS_MISSING=true; }
         else
-            echo "✅ Text encoder found: qwen_3_4b.safetensors"
+            echo "[OK] Text encoder found: qwen_3_4b.safetensors"
         fi
 
         # Check VAE
         if [ ! -f "$VAE_MODEL" ]; then
-            echo "📥 Downloading Z-Image-Turbo VAE (~200MB)..."
+            echo "Downloading Z-Image-Turbo VAE (200MB)..."
             mkdir -p "$COMFYUI_DIR/models/vae"
-            wget --progress=dot:giga -O "$VAE_MODEL" \
+            wget --progress=bar:force:noscroll -O "$VAE_MODEL" \
                 "https://huggingface.co/Comfy-Org/z_image_turbo/resolve/main/split_files/vae/ae.safetensors" \
-                || { echo "❌ Failed to download VAE"; MODELS_MISSING=true; }
+                || { echo "[ERROR] Failed to download VAE"; MODELS_MISSING=true; }
         else
-            echo "✅ VAE found: ae.safetensors"
+            echo "[OK] VAE found: ae.safetensors"
         fi
 
         if [ "$MODELS_MISSING" = "false" ]; then
-            echo "✅ All Z-Image-Turbo models are available"
+            echo "[OK] All Z-Image-Turbo models are available"
         else
-            echo "⚠️  Some models failed to download, but continuing..."
+            echo "[WARN] Some models failed to download, but continuing..."
         fi
     fi
 else
-    echo "⏭️  Model checking disabled (CHECK_MODELS=false)"
+    echo "[SKIP] Model checking disabled (CHECK_MODELS=false)"
 fi
 
-echo "✅ Initialization completed successfully"
+echo "[OK] Initialization completed successfully"
 exit 0
