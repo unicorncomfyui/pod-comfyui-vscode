@@ -77,7 +77,7 @@ if [ -d "$SAGE_CACHE_DIR/SageAttention" ] && [ -f "$SAGE_COMMIT_FILE" ]; then
 
     if [ "$CACHED_COMMIT" = "$SAGE_COMMIT" ]; then
         echo "Found valid SageAttention cache (commit $CACHED_COMMIT)"
-        echo "Installing from cache (~10 seconds)..."
+        echo "Installing from cache (1-2 min - CUDA extensions must be reinstalled)..."
 
         cd "$SAGE_CACHE_DIR/SageAttention"
 
@@ -85,7 +85,7 @@ if [ -d "$SAGE_CACHE_DIR/SageAttention" ] && [ -f "$SAGE_COMMIT_FILE" ]; then
         if pip install --no-build-isolation --no-deps . > /tmp/sage_cache_install.log 2>&1; then
             # Verify cached installation works
             if python -c "import sageattention" 2>/dev/null; then
-                echo "[OK] SageAttention installed from cache successfully"
+                echo "[OK] SageAttention installed from cache"
             else
                 echo "[WARN] Cached installation failed import test, rebuilding..."
                 compile_sageattention || exit 1
