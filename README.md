@@ -30,14 +30,11 @@ docker pull vlop12ui/pod-comfyui-vscode:latest
 
 ### 2. Deploy on RunPod
 
-1. Go to [RunPod Pods](https://www.runpod.io/console/pods)
-2. Click **+ Deploy**
-3. Select **GPU**: RTX 5090 or A100
-4. **Container Image**: `vlop12ui/pod-comfyui-vscode:latest`
-5. **Container Disk**: 20GB minimum
-6. **Expose Ports**: `8080, 3000`
-7. **(Optional)** Attach Network Volume
-8. Click **Deploy**
+**[Deploy with one click](https://console.runpod.io/deploy?template=2kd0a6oy1x&ref=0f4gc2hq)**
+
+1. Select **RTX 5090** as GPU for best performance
+2. Set **Container Disk** to 30GB OR attach a Network Volume for persistent storage
+3. Click **Deploy**
 
 ### 3. Access Your Pod
 
