@@ -66,22 +66,22 @@ No authentication required - RunPod handles security.
 
 ### ComfyUI Optimizations
 
-- ⚡ **SageAttention caching**: ~10s cold start (vs 2-3min without cache)
-- 🎯 **WAN 2.2 ready**: Text-to-video and image-to-video workflows
-- 🖼️ **Z-Image-Turbo auto-download**: Automatic model download to network volume (diffusion model, text encoder, VAE)
-- 🔍 **UltraSharp 4x upscaler**: Pre-installed ESRGAN upscaler (67MB)
-- 📋 **Example workflows**: Z-Image-Turbo with upscaling demonstration
-- 🧠 **tcmalloc enabled**: Efficient memory management
-- 📦 **Network Volume support**: Persistent models and cache
-- 🔄 **Auto-initialization**: ComfyUI automatically copied to network volume on first run
+- **SageAttention caching**: ~10s cold start (vs 2-3min without cache)
+- **WAN 2.2 ready**: Text-to-video and image-to-video workflows
+- **Z-Image-Turbo auto-download**: Automatic model download to network volume (diffusion model, text encoder, VAE)
+- **UltraSharp 4x upscaler**: Pre-installed ESRGAN upscaler (67MB)
+- **Example workflows**: Z-Image-Turbo with upscaling demonstration
+- **tcmalloc enabled**: Efficient memory management
+- **Network Volume support**: Persistent models and cache
+- **Auto-initialization**: ComfyUI automatically copied to network volume on first run
 
 ### Development Environment
 
-- 💻 **VSCode in browser**: Full IDE with terminal
-- 🔌 **No authentication**: Secured by RunPod proxy
-- 📂 **Access to /workspace**: Edit custom nodes, workflows, scripts
-- 🐍 **Python 3.11 + PyTorch**: Ready for development
-- 📊 **Professional logging**: Clean output with [OK]/[ERROR]/[WARN] tags and single-line progress bars
+- **VSCode in browser**: Full IDE with terminal
+- **No authentication**: Secured by RunPod proxy
+- **Access to /workspace**: Edit custom nodes, workflows, scripts
+- **Python 3.11 + PyTorch**: Ready for development
+- **Professional logging**: Clean output with [OK]/[ERROR]/[WARN] tags and single-line progress bars
 
 ## Network Volume Structure
 
@@ -118,9 +118,9 @@ No authentication required - RunPod handles security.
 
 | Workflow | Resolution | Frames | Time |
 |----------|-----------|--------|------|
+| Z-Image-Turbo | 1024x1024 | 1 | ~2-4s |
+| Z-Image-Turbo | 1080x1920 | 1 | ~3-5s |
 | WAN 2.2 t2v | 720p | 61 | ~50-55s |
-| WAN 2.2 i2v | 720p | 61 | ~50-55s |
-| Image gen | 1080x1920 | 1 | ~10-12s |
 
 ## Usage
 
