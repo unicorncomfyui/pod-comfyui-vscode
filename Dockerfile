@@ -83,7 +83,7 @@ RUN curl -fsSL https://code-server.dev/install.sh | sh -s -- --version=${CODE_SE
 WORKDIR /app
 
 # Clone ComfyUI (pinned version for stability)
-ARG COMFYUI_COMMIT=36357bb
+ARG COMFYUI_COMMIT=0.4.0
 RUN git clone https://github.com/comfyanonymous/ComfyUI.git comfyui && \
     cd comfyui && \
     git reset --hard ${COMFYUI_COMMIT}
